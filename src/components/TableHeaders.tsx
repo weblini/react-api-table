@@ -7,15 +7,15 @@ import {
 } from "@mui/material";
 import { Order, OrderProperty, headCells } from "../utils";
 import { visuallyHidden } from "@mui/utils";
+import { memo } from "react";
 
 type Props = {
   order: Order;
   orderBy: OrderProperty;
-  handleSort: (property: OrderProperty) => void 
+  handleSort: (property: OrderProperty) => void;
 };
 
-export default function TableHeaders({ order, orderBy, handleSort }: Props) {
-
+const TableHeaders = memo(({ order, orderBy, handleSort }: Props) => {
   return (
     <TableHead>
       <TableRow>
@@ -48,4 +48,6 @@ export default function TableHeaders({ order, orderBy, handleSort }: Props) {
       </TableRow>
     </TableHead>
   );
-}
+});
+
+export default TableHeaders;

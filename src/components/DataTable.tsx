@@ -1,80 +1,35 @@
 import {
-  CircularProgress,
   Table,
   TableBody,
   TableContainer,
   TablePagination,
 } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
-import useSWR, { preload } from "swr";
 import PageCountSelector from "./PageCountSelector";
-import {
-  type Order,
-  type OrderProperty,
-  defaults,
-  fetcher,
-  getApiURL,
-} from "../utils";
 import TableContent from "./TableContent";
 import TableHeaders from "./TableHeaders";
+import useTagData from "../hooks/useTagData";
 
 export default function DataTable() {
-  const [page, setPage] = useState(defaults.page);
-  const [rowsPerPage, setRowsPerPage] = useState(defaults.rows);
-  const [order, setOrder] = useState<Order>(defaults.order);
-  const [orderBy, setOrderBy] = useState<OrderProperty>(defaults.orderProperty);
-
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage + 1);
-  };
-
-  const resetState = () => {
-    setPage(defaults.page);
-    setRowsPerPage(defaults.rows);
-    setOrder(defaults.order);
-    setOrderBy(defaults.orderProperty);
-  };
-
-  const handleChangeRows = useCallback(
-    (_: unknown, newRows: number | null) => {
-      setRowsPerPage(newRows || 5);
-      setPage(1);
-    },
-    [setPage, setRowsPerPage]
-  );
-
-  const handleRequestSort = (property: OrderProperty) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-    setPage(1);
-  };
-
-  const url = getApiURL(page, rowsPerPage, order, orderBy)
-
-  const { data, error, isLoading } = useSWR(
-    url,
-    fetcher,
-    {
-      dedupingInterval: 5000,
-      shouldRetryOnError: false,
-      revalidateOnFocus: false,
-      revalidateOnMount: false
-    }
-  );
-
-  // // preload next page
-  // useEffect(() => {
-  //   if (data?.items?.length) {
-  //     preload(getApiURL(page + 1, rowsPerPage, order, orderBy), fetcher);
-  //   }
-  // }, [page, rowsPerPage, order, orderBy]);
+  const {
+    page,
+    rowsPerPage,
+    order,
+    orderBy,
+    handleChangePage,
+    handleChangeRows,
+    handleRequestSort,
+    data,
+    error,
+    isLoading,
+    resetState,
+  } = useTagData();
 
   return (
     <>
-      <PageCountSelector rows={rowsPerPage} handleChangeRows={handleChangeRows}>
-        {isLoading && <CircularProgress />}
-      </PageCountSelector>
+      <PageCountSelector
+        rows={rowsPerPage}
+        handleChangeRows={handleChangeRows}
+      />
 
       <TableContainer sx={{ position: "relative" }}>
         <Table stickyHeader aria-labelledby="Tag data" size="medium">
@@ -83,9 +38,13 @@ export default function DataTable() {
             orderBy={orderBy}
             handleSort={handleRequestSort}
           />
-          <TableBody sx={{ opacity: isLoading ? 0.5 : 1 }}>
-            <TableContent error={error} data={data} resetState={resetState} />
-          </TableBody>
+          <TableContent
+            error={error}
+            data={data}
+            resetState={resetState}
+            isLoading={isLoading}
+            rows={rowsPerPage}
+          />
         </Table>
       </TableContainer>
       {!error && (

@@ -34,11 +34,10 @@ function CustomNumberInput(props: NumberInputProps) {
 type Props = {
   rows: number;
   handleChangeRows: (_: unknown, rows: number | null) => void;
-  children?: React.ReactNode;
 };
 
 const PageCountSelector = React.memo(
-  ({ rows, handleChangeRows, children }: Props) => {
+  ({ rows, handleChangeRows }: Props) => {
     return (
       <>
         <Box
@@ -48,7 +47,6 @@ const PageCountSelector = React.memo(
           paddingBottom={2}
           flexShrink={0}
         >
-          {children}
           <Typography
             component="label"
             htmlFor="row-number"
