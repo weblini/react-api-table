@@ -1,6 +1,5 @@
 import {
   Table,
-  TableBody,
   TableContainer,
   TablePagination,
 } from "@mui/material";
